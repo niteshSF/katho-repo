@@ -1,11 +1,10 @@
-// import { Section } from "lucide-react"
 import { create } from "zustand"
 
 interface State {
   sutra_no: number
-  valli_no: number
-  chapter: number
-  section: number
+  valli_no: number // visible external name (Chapter)
+  chapter: number  // internal mirror of valli_no for API use
+  section: number  // Adhyaya
   isComplete: boolean
 }
 
@@ -23,111 +22,166 @@ interface Actions {
   prevValli: () => void
 }
 
-const MAX_SUTRA_PER_VALLI: Record<number, number> = {
-  0: 0, // Shanti Mantra before Adhyaya-1
-  1: 29,
-  2: 25,
-  3: 17,
-  4: 15,
-  5: 15,
-  6: 18,
+// Sutra count per (adhyaya, valli)
+const MAX_SUTRAS: Record<string, number> = {
+  "1-1": 29,
+  "1-2": 25,
+  "1-3": 17,
+  "2-1": 15,
+  "2-2": 15,
+  "2-3": 18,
 }
-// const MAX_VALLI = Object.keys(MAX_SUTRA_PER_VALLI).length
-const MAX_VALLI_PER_ADHYAYA: Record<number, number> = {
-  0: 0,
-  1: 3,
-  2: 3,
-}
-const MAX_ADHYAYA = Object.keys(MAX_VALLI_PER_ADHYAYA).length
+
+const MAX_ADHYAYA = 2
+const MAX_VALLI_PER_ADHYAYA = 3
 
 const useSutraStore = create<State & Actions>((set, get) => ({
   sutra_no: 1,
-  valli_no: 0,
+  valli_no: 1,
   chapter: 1,
-  section: 0,
+  section: 1,
   isComplete: false,
 
   setSutraNo: (sutraNo) =>
     set(() => ({ sutra_no: sutraNo, isComplete: false })),
+
   setValliNo: (valliNo) =>
     set(() => ({
       valli_no: valliNo,
-      sutra_no: 1,
       chapter: valliNo,
+      sutra_no: 1,
       isComplete: false,
     })),
-  setChapter: (chapter) => set(() => ({ chapter })),
+
+  setChapter: (chapter) =>
+    set(() => ({
+      valli_no: chapter,
+      chapter,
+    })),
+
   setSection: (section) => set(() => ({ section })),
+
   setBoth: (valli, sutra) =>
     set(() => ({
       valli_no: valli,
-      sutra_no: sutra,
       chapter: valli,
+      sutra_no: sutra,
       isComplete: false,
     })),
 
   setAll: (section, valli, sutra) =>
     set(() => ({
+      section,
       valli_no: valli,
-      sutra_no: sutra,
       chapter: valli,
-      section: section,
+      sutra_no: sutra,
       isComplete: false,
     })),
-  incrementSutra: () => {
-    const { sutra_no, valli_no, section } = get()
-    const maxValli = MAX_VALLI_PER_ADHYAYA[section]
-    const maxSutra = MAX_SUTRA_PER_VALLI[valli_no]
-    // console.log("incrementSutra: section:", section, ' valli:', valli_no, " sutra", sutra_no, "maxSutra", maxSutra, "maxValli", maxValli)
 
-    // Last sutra of last kanda — stop
-    if (
-      section === MAX_ADHYAYA &&
-      valli_no === maxValli &&
-      sutra_no === maxSutra
-    ) {
-      set(() => ({ isComplete: true }))
+  incrementSutra: () => {
+    const { section, valli_no, sutra_no } = get()
+
+    // Shanti Mantra → First real sutra
+    if (section === 0 && valli_no === 0 && sutra_no === 1) {
+      set(() => ({
+        section: 1,
+        valli_no: 1,
+        chapter: 1,
+        sutra_no: 1,
+      }))
       return
     }
 
-    // Normal increment
-    // console.log("Normal increment") //: section:", section, ' valli:', valli_no, " sutra", sutra_no)
+     // Last Sutra → Ending Shanti Mantra (0/7/1)
+  if (section === 2 && valli_no === 3 && sutra_no === 18) {
+    set(() => ({
+      section: 0,
+      valli_no: 7,
+      chapter: 7,
+      sutra_no: 1,
+    }))
+    return
+  }
+
+  // Ending Shanti Mantra → End
+  if (section === 0 && valli_no === 7 && sutra_no === 1) {
+    set(() => ({
+      isComplete: true,
+    }))
+    return
+  }
+
+    const key = `${section}-${valli_no}`
+    const maxSutra = MAX_SUTRAS[key] || 1
+
     if (sutra_no < maxSutra) {
       set(() => ({ sutra_no: sutra_no + 1 }))
-    } else if (valli_no < maxValli) {
-      const nextValli = valli_no + 1
-      // console.log("nextValli", nextValli)
+    } else if (valli_no < MAX_VALLI_PER_ADHYAYA) {
       set(() => ({
-        valli_no: nextValli,
-        chapter: nextValli,
+        valli_no: valli_no + 1,
+        chapter: valli_no + 1,
         sutra_no: 1,
       }))
     } else if (section < MAX_ADHYAYA) {
-      const nextSection = section + 1
-      const nextValli = 1 // MAX_VALLI_PER_ADHYAYA[nextSection] || 1
-      // const maxSutraNext = MAX_SUTRA_PER_VALLI[nextValli] || 1
-      // console.log("nextSection", nextSection, "nextValli", nextValli, "maxSutraNext", maxSutraNext)
       set(() => ({
-        section: nextSection,
-        valli_no: nextValli,
-        chapter: nextValli,
-        sutra_no: 1, // maxSutraNext,
+        section: section + 1,
+        valli_no: 1,
+        chapter: 1,
+        sutra_no: 1,
       }))
+    } else {
+      set(() => ({ isComplete: true }))
     }
   },
 
   decrementSutra: () => {
-    const { sutra_no, valli_no } = get()
+    const { section, valli_no, sutra_no } = get()
+
+    // From 1/1/1 → go back to Shanti Mantra (0/0/1)
+    if (section === 1 && valli_no === 1 && sutra_no === 1) {
+      set(() => ({
+        section: 0,
+        valli_no: 0,
+        chapter: 0,
+        sutra_no: 1,
+        isComplete: false,
+      }))
+      return
+    }
+    
+    // From (last Shanti Mantra) 0/7/1 → go back to (2/3/18)
+    if (section === 0 && valli_no === 7 && sutra_no === 1) {
+      set(() => ({
+        section: 2,
+        valli_no: 3,
+        chapter: 3,
+        sutra_no: 18,
+        isComplete: false,
+      }))
+      return
+    }
 
     if (sutra_no > 1) {
       set(() => ({ sutra_no: sutra_no - 1 }))
     } else if (valli_no > 1) {
       const prevValli = valli_no - 1
-      const maxSutraPrev = MAX_SUTRA_PER_VALLI[prevValli] || 1
+      const key = `${section}-${prevValli}`
+      const maxPrevSutra = MAX_SUTRAS[key] || 1
       set(() => ({
         valli_no: prevValli,
         chapter: prevValli,
-        sutra_no: maxSutraPrev,
+        sutra_no: maxPrevSutra,
+      }))
+    } else if (section > 1) {
+      const prevSection = section - 1
+      const prevValli = MAX_VALLI_PER_ADHYAYA
+      const key = `${prevSection}-${prevValli}`
+      const maxPrevSutra = MAX_SUTRAS[key] || 1
+      set(() => ({
+        section: prevSection,
+        valli_no: prevValli,
+        chapter: prevValli,
+        sutra_no: maxPrevSutra,
       }))
     }
   },
@@ -137,37 +191,56 @@ const useSutraStore = create<State & Actions>((set, get) => ({
       sutra_no: 1,
       valli_no: 1,
       chapter: 1,
-      section: 0,
+      section: 1,
       isComplete: false,
     })),
 
   nextValli: () => {
     const { valli_no, section } = get()
-    let nextSection = section
-    if (valli_no === MAX_VALLI_PER_ADHYAYA[section]) {
-      nextSection = section + 1 <= MAX_ADHYAYA ? section + 1 : section
+    if (valli_no < MAX_VALLI_PER_ADHYAYA) {
+      const next = valli_no + 1
+      set(() => ({
+        valli_no: next,
+        chapter: next,
+        sutra_no: 1,
+        isComplete: false,
+      }))
+    } else if (section < MAX_ADHYAYA) {
+      set(() => ({
+        section: section + 1,
+        valli_no: 1,
+        chapter: 1,
+        sutra_no: 1,
+        isComplete: false,
+      }))
     }
-    const next =
-      valli_no + 1 <= MAX_VALLI_PER_ADHYAYA[section] ? valli_no + 1 : valli_no
-    set(() => ({
-      section: nextSection,
-      valli_no: next,
-      sutra_no: 1,
-      chapter: next,
-      isComplete: false,
-    }))
   },
 
   prevValli: () => {
-    const { valli_no } = get()
-    const prev = valli_no - 1 >= 1 ? valli_no - 1 : valli_no
-    const maxSutra = MAX_SUTRA_PER_VALLI[prev] || 1
-    set(() => ({
-      valli_no: prev,
-      sutra_no: maxSutra,
-      chapter: prev,
-      isComplete: false,
-    }))
+    const { valli_no, section } = get()
+    if (valli_no > 1) {
+      const prev = valli_no - 1
+      const key = `${section}-${prev}`
+      const maxSutra = MAX_SUTRAS[key] || 1
+      set(() => ({
+        valli_no: prev,
+        chapter: prev,
+        sutra_no: maxSutra,
+        isComplete: false,
+      }))
+    } else if (section > 1) {
+      const prevSection = section - 1
+      const prevValli = MAX_VALLI_PER_ADHYAYA
+      const key = `${prevSection}-${prevValli}`
+      const maxSutra = MAX_SUTRAS[key] || 1
+      set(() => ({
+        section: prevSection,
+        valli_no: prevValli,
+        chapter: prevValli,
+        sutra_no: maxSutra,
+        isComplete: false,
+      }))
+    }
   },
 }))
 

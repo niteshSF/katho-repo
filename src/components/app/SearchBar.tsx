@@ -133,7 +133,9 @@ const SearchBar = () => {
         </p>
 
         <p className="flex-[2] text-right text-md text-gray-800">
-          ॥ {result.chapter <= 3 ? "1" : "2"}.{result.chapter}.{result.sutra_no}{" "}
+
+          ॥ {result.section === 0 ? "SM" : `${result.section}.${result.chapter}.${result.sutra_no}`}
+
           ॥ <br />
           <span className="text-[13px] font-semibold text-gray-800">
             ({modeLabel})

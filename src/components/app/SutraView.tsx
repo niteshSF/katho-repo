@@ -68,13 +68,9 @@ const SutraView = () => {
             Anusarak <ExternalLink size={20} />
           </Link>
 
-          <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center w-20 h-10">
-              {valli_no >= 1 && valli_no <= 3
-                ? `1.${valli_no}.${data.number}`
-                : valli_no >= 4 && valli_no <= 6
-                ? `2.${valli_no}.${data.number}`
-                : "SM"}
-          </p>
+          <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center w-20 h-10 mb-2">
+                {section === 0 ? "SM" : `${section}.${valli_no}.${data.number}`}
+              </p>
 
         </div>
       )}
