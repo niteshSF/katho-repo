@@ -37,9 +37,9 @@ const MAX_VALLI_PER_ADHYAYA = 3
 
 const useSutraStore = create<State & Actions>((set, get) => ({
   sutra_no: 1,
-  valli_no: 1,
-  chapter: 1,
-  section: 1,
+  valli_no: 0,
+  chapter: 0,
+  section: 0,
   isComplete: false,
 
   setSutraNo: (sutraNo) =>
