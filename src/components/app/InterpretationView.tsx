@@ -95,10 +95,15 @@ const InterpretationView = () => {
         </TexturedButton>
 
         {/* Sutra Reference Display */}
+
         <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center font-bold w-20 h-10 mt-1 ml-10">
-          {valli_no <= 3 ? "1" : "2"}.{valli_no}.
-          {sutra_no === 0 || sutra_no === -1 ? "S" : sutra_no}
-        </p>
+          {valli_no >= 1 && valli_no <= 3
+            ? `1.${valli_no}.${sutra_no}`
+            : valli_no >= 4 && valli_no <= 6
+            ? `2.${valli_no}.${sutra_no}`
+            : "SM"}
+       </p>
+
       </div>
 
       {/* Text Area */}

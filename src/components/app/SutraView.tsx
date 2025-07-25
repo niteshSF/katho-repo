@@ -69,9 +69,13 @@ const SutraView = () => {
           </Link>
 
           <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center w-20 h-10">
-            {section}.{valli_no}.
-            {data.number === 0 || data.number === -1 ? "S" : data.number}
+              {valli_no >= 1 && valli_no <= 3
+                ? `1.${valli_no}.${data.number}`
+                : valli_no >= 4 && valli_no <= 6
+                ? `2.${valli_no}.${data.number}`
+                : "SM"}
           </p>
+
         </div>
       )}
 
