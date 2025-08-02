@@ -8,6 +8,7 @@ import { useGetSutraListQuery } from "@/api/sutras.api.ts"
 import ErrorMessage from "../shared/ErrorMessage"
 import CustomBeatLoader from "../shared/CustomBeatLoader"
 import SearchBar from "./SearchBar"
+import AdhyayaTexturedButton from "../shared/AdhyayaTexturedButton"
 
 interface Valli {
   section?: number
@@ -31,7 +32,7 @@ const RightScroll = ({ isCommentary }: { isCommentary: boolean }) => {
 
   const { error, isLoading } = useGetSutraListQuery()
 
-  // NOTE: valli_list is hardcoded since you are using only Vallis 1-3 in section 1 and Vallis 1-3 in section 2
+  // valli_list is hardcoded since we are using only Vallis 1-3 in section 1 and Vallis 1-3 in section 2
   const data: { valli_list: Valli[] } = {
     valli_list: [
       { section: 1, number: 1, sutra_list: Array(29).fill(0).map((_, i) => i + 1) },
@@ -79,13 +80,14 @@ const inAdhyaya2 = adhyaya2.some((k) => k.number === chapter && k.section === se
         </TexturedButton>
 
         {/* ───────── ADHYĀYA 1 ───────── */}
-        <TexturedButton
+
+        <AdhyayaTexturedButton  // updated as per the adhyayas only
           className="mt-1"
           selected={inAdhyaya1}
           disabled={inAdhyaya1}
         >
           ADHYĀYA - 1
-        </TexturedButton>
+        </AdhyayaTexturedButton>
 
         {adhyaya1.map((item, idx) => (
           <TexturedButton
@@ -99,23 +101,26 @@ const inAdhyaya2 = adhyaya2.some((k) => k.number === chapter && k.section === se
         ))}
 
         {/* ───────── ADHYĀYA 2 ───────── */}
-        <TexturedButton
+
+        <AdhyayaTexturedButton  // updated as per the adhyayas only
           className="mt-2"
           selected={inAdhyaya2}
           disabled={inAdhyaya2}
         >
           ADHYĀYA - 2
-        </TexturedButton>
+        </AdhyayaTexturedButton>
 
         {adhyaya2.map((item, idx) => (
           <TexturedButton
             key={`2-${item.number}`}
-            // selected={chapter === item.number && item.section === 2}
             selected={chapter === item.number && section === item.section}
             onClick={() => setAllThree(2, item.number, firstSutra(item.sutra_list))}
             className="-mt-1"
           >
-            Valli {idx + 1}
+
+            {/* updated this as we have to show from valli number 4 but in database it is from the 1 number */}
+            Valli {idx + 4}
+
           </TexturedButton>
         ))}
 
