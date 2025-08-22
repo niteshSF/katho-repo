@@ -54,13 +54,18 @@ const LanguageSelect: React.FC<LanguageSelectProps> = ({ isCommentary }) => {
         }}
       >
         {[
-          {value:"sa", label:"Sanskrit"},
+
+          // { value: "sa", label: "Sanskrit" },  // Right now the data was not their, in future we have to use this
+
           { value: "en", label: "English" },
           { value: "kn", label: "Kannada" },
-          { value: "te", label: "Telugu" },
-          { value: "ta", label: "Tamil" },
+
+          // { value: "te", label: "Telugu" },  //  Right now the data was not their, in future we have to use this
+          // { value: "ta", label: "Tamil" },  // Right now the data was not their, in future we have to use this
+
           { value: "hi", label: "Hindi" },
-        ].map((item) => (
+
+         ].map((item) => (
           <SelectItem
             key={item.value}
             value={item.value}

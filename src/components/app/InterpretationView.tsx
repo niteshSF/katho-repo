@@ -96,10 +96,16 @@ const InterpretationView = () => {
 
         {/* Sutra Reference Display */}
 
-              <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center font-bold w-20 h-10 mt-1 ml-10">
+              {/* <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center font-bold w-20 h-10 mt-1 ml-10">
                 {section === 0 ? "SM" : `${section}.${valli_no}.${sutra_no}`} 
-              </p>
-       
+              </p> */}
+
+        {/* valli no will change as per the section but in database it is valli 1, 2, 3 only */}
+          <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center font-bold w-20 h-10 ml-10 mb-2">
+            {section === 0 
+              ? "SM" 
+              : `${section}.${section === 2 ? valli_no + 3 : valli_no}.${sutra_no}`}
+          </p>
 
       </div>
 
