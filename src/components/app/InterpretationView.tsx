@@ -85,7 +85,7 @@ const InterpretationView = () => {
           selected={philosophy === Philosophy.Dvaitha}
           onClick={() => setPhilosophy(Philosophy.Dvaitha)}
         >
-          Dvaita
+          Dvaita 
         </TexturedButton>
         <TexturedButton
           selected={philosophy === Philosophy.Vishishtadvaita}
@@ -100,10 +100,10 @@ const InterpretationView = () => {
                 {section === 0 ? "SM" : `${section}.${valli_no}.${sutra_no}`} 
               </p> */}
 
-        {/* valli no will change as per the section but in database it is valli 1, 2, 3 only */}
+        {/* valli no. will change as per the section but in database it is valli 1, 2, 3 only */}
           <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center font-bold w-20 h-10 ml-10 mb-2">
-            {section === 0 
-              ? "SM" 
+            {section === 0
+              ? "SM"
               : `${section}.${section === 2 ? valli_no + 3 : valli_no}.${sutra_no}`}
           </p>
 

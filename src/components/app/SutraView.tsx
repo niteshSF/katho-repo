@@ -56,17 +56,23 @@ const SutraView = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
+
+      
       {/* Fixed Header */}
       {data && (
         <div className="sticky top-4 z-50 bg-transparent px-16 py-2 flex justify-between items-center text-lg font-bold text-darkbrown">
-          <Link
-            to="/anusarak.png"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1"
-          >
-            Anusarak <ExternalLink size={20} />
-          </Link>
+          
+          {/* This will help us to put SM at full right top, when the anusarak was not their */}
+            <div className="w-[140px]"> 
+              {/* Show Anusarak link only if it is not SM */}
+              {!(data.section === 0) && (
+                <Link to="/anusarak.png" target="_blank" rel="noopener noreferrer">
+                  <div className="flex mt-[2px] gap-1 items-center">
+                    Anusarak <ExternalLink size="20px" />
+                  </div>
+                </Link>
+              )}
+            </div>
 
           {/* valli no will change as per the section but in database it is valli 1, 2, 3 only */}
           <p className="bg-darkbrown rounded-sm text-white flex items-center justify-center w-20 h-10 mb-2">
